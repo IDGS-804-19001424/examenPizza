@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
+
+    <div class="flex justify-between items-center mb-6 border-b pb-4">
+        <h2 class="text-2xl font-bold text-gray-800">Detalle del Pedido #{{ pedido.id_pedido }}</h2>
+        <a href="{{ url_for('pedidos.ventas') }}" class="text-sm font-medium text-blue-600 hover:underline">← Regresar a
+            Ventas</a>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
+        <div>
+            <p class="text-sm text-gray-500">Cliente</p>
+            <p class="font-bold text-gray-900">{{ pedido.cliente.nombre }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Teléfono</p>
+            <p class="font-medium text-gray-900">{{ pedido.cliente.telefono }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Dirección</p>
+            <p class="font-medium text-gray-900">{{ pedido.cliente.direccion }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Fecha de Compra</p>
+            <p class="font-medium text-gray-900">{{ pedido.fecha.strftime('%d/%m/%Y') }}</p>
+        </div>
+    </div>
+
+    <h3 class="text-lg font-bold mb-3 text-gray-800">Pizzas en este pedido</h3>
+
+    <div class="relative overflow-x-auto shadow-sm sm:rounded-lg border border-gray-200">
+        <table class="w-full text-sm text-left text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                <tr>
+                    <th scope="col" class="px-4 py-3">Cantidad</th>
+                    <th scope="col" class="px-4 py-3">Tamaño</th>
+                    <th scope="col" class="px-4 py-3">Ingredientes Extra</th>
+                    <th scope="col" class="px-4 py-3 text-right">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detalle in detalles %}
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium text-gray-900 text-center">{{ detalle.cantidad }}</td>
+                    <td class="px-4 py-3">{{ detalle.pizza.tamano }}</td>
+                    <td class="px-4 py-3">{{ detalle.pizza.ingredientes }}</td>
+                    <td class="px-4 py-3 text-right font-semibold">${{ detalle.subtotal }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="bg-gray-50">
+                    <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-900">Total del Pedido:</td>
+                    <td class="px-4 py-3 text-right font-bold text-green-600 text-lg">${{ pedido.total }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}

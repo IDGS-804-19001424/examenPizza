@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md mb-8">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Reporte de Ventas</h2>
+
+    <form method="GET" action="{{ url_for('pedidos.ventas') }}"
+        class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+
+        <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900">Buscar por Día Exacto</label>
+            <input type="date" name="fecha_exacta" value="{{ request.args.get('fecha_exacta', '') }}"
+                class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+        </div>
+
+        <div class="flex items-end space-x-2">
+            <button type="submit"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full">
+                Filtrar Ventas
+            </button>
+            <a href="{{ url_for('pedidos.ventas') }}"
+                class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5">
+                Limpiar
+            </a>
+        </div>
+    </form>
+
+    <div class="relative overflow-x-auto shadow-sm sm:rounded-lg">
+        <table class="w-full text-sm text-left text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-blue-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3">ID Pedido</th>
+                    <th scope="col" class="px-6 py-3">Cliente</th>
+                    <th scope="col" class="px-6 py-3">Fecha</th>
+                    <th scope="col" class="px-6 py-3">Total</th>
+                    <th scope="col" class="px-6 py-3">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venta in ventas %}
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-6 py-4 font-bold">#{{ venta.id_pedido }}</td>
+                    <td class="px-6 py-4">{{ venta.cliente.nombre }}</td>
+                    <td class="px-6 py-4">{{ venta.fecha.strftime('%d/%m/%Y') }}</td>
+                    <td class="px-6 py-4 font-semibold text-green-600">${{ venta.total }}</td>
+                    <td class="px-6 py-4">
+                        <a href="{{ url_for('pedidos.detalle_venta', id_pedido=venta.id_pedido) }}"
+                            class="font-medium text-blue-600 hover:underline">Ver Detalle</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">No se encontraron ventas con esos
+                        filtros.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-6 text-right">
+        <h3 class="text-2xl font-bold text-gray-900">Total Acumulado: <span class="text-green-600">${{ total_acumulado
+                }}</span></h3>
+    </div>
+</div>
+{% endblock %}

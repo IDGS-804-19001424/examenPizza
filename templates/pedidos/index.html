@@ -1,0 +1,113 @@
+{% extends 'layout.html' %}
+{% import '_macros.html' as macros %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-bold mb-4">Datos del Pedido</h2>
+
+        <form method="POST" action="{{ url_for('pedidos.index') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="grid grid-cols-2 gap-4">
+                {{ macros.render_field(form.nombre) }}
+                {{ macros.render_field(form.direccion) }}
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                {{ macros.render_field(form.telefono) }}
+                {{ macros.render_field(form.fecha, type="date") }}
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Tamaño Pizza</label>
+                    <div class="space-y-2">
+                        {% for subfield in form.tamano %}
+                        <div class="flex items-center">
+                            {{ subfield(class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500")
+                            }}
+                            {{ subfield.label(class="ml-2 text-sm font-medium text-gray-900") }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if form.tamano.errors %}
+                    <span class="text-sm text-red-600">{{ form.tamano.errors[0] }}</span>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Ingredientes (+$10 c/u)</label>
+                    <div class="space-y-2">
+                        {% for subfield in form.ingredientes %}
+                        <div class="flex items-center">
+                            {{ subfield(class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded
+                            focus:ring-blue-500") }}
+                            {{ subfield.label(class="ml-2 text-sm font-medium text-gray-900") }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                {{ macros.render_field(form.num_pizzas) }}
+            </div>
+
+            <button type="submit" name="btn_agregar"
+                class="mt-4 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 focus:outline-none">
+                Agregar al Carrito
+            </button>
+        </form>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-bold mb-4">Resumen del Pedido</h2>
+
+        <div class="relative overflow-x-auto shadow-sm sm:rounded-lg">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-4 py-3">Tamaño</th>
+                        <th scope="col" class="px-4 py-3">Ingredientes</th>
+                        <th scope="col" class="px-4 py-3">Num. Pizzas</th>
+                        <th scope="col" class="px-4 py-3">Sub Total</th>
+                        <th scope="col" class="px-4 py-3">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in carrito %}
+                    <tr class="bg-white border-b hover:bg-gray-50">
+                        <td class="px-4 py-3">{{ item.tamano }}</td>
+                        <td class="px-4 py-3">{{ item.ingredientes }}</td>
+                        <td class="px-4 py-3">{{ item.num_pizzas }}</td>
+                        <td class="px-4 py-3">${{ item.subtotal }}</td>
+                        <td class="px-4 py-3">
+                            <a href="{{ url_for('pedidos.quitar', id_temp=item.id_temp) }}"
+                                class="font-medium text-red-600 hover:underline">Quitar</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="px-4 py-4 text-center text-gray-500">No hay pizzas en el carrito</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-gray-900">Total a pagar: ${{ total_carrito }}</h3>
+
+            <form method="POST" action="{{ url_for('pedidos.index') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" name="btn_terminar"
+                    class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none">
+                    Terminar Pedido
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
